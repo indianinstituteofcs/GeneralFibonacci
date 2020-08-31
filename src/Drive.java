@@ -45,7 +45,7 @@ public class Drive {
 
 				if (nthValue > 0) {
 					long answer2 = gf4.calculateNthTerm(nthValue - 1);
-					System.out.println("ANSWER(Tail Recursive Method): Value number "+ nthValue + " is: " + answer2);					
+					System.out.println("ANSWER(Clever Recursive Method): Value number "+ nthValue + " is: " + answer2);					
 					answer2 = gf4.calculateNthTermIterative(nthValue - 1);
 					System.out.println("ANSWER(Iterative Method): Value number "+ nthValue + " is: " + answer2);
 					answer2 = gf4.calculateNthTermExp(nthValue - 1);
