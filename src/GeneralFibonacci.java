@@ -22,9 +22,40 @@ class GeneralFibonacci {
 		firstNTerms = inFirstNTerms;
 		calcSpace = new long[termsToAdd];
 	}
+	
+	
+    void printFibonacciDefinition() {
+    	System.out.println("***********************");
+    	System.out.println("General Fibonacci definition");
+    	System.out.println("k = " + termsToAdd);
+    	System.out.print("Initial Values: [");
+    	int size = firstNTerms.length;
+    	for (int i = 0; i < size; i++) {
+    		if (i < (size - 1)) {
+    			System.out.print(firstNTerms[i] +", ");
+    		} else { System.out.println(firstNTerms[i] + "]"); }
+    	}
+    	System.out.println("***********************");
+    }
+    
+
+	public void resetGeneralFibonacci(int inTermsToAdd, long [] inFirstNTerms) throws ConstructorException {
+		if (inTermsToAdd < 2) {
+			throw new ConstructorException(TERMS_TO_ADD, "In F(n) = Sum(n-k <= j <= n-1)F(j). k must be => 2.");
+		}
+
+		if (inTermsToAdd !=  inFirstNTerms.length) {
+			throw new ConstructorException(LENGTH_MISMATCH, "The number of initial terms provided must be same as k in F(n) = Sum(n-k <= j <= n-1)F(j).");
+		}
+
+		termsToAdd = inTermsToAdd;
+		firstNTerms = inFirstNTerms;
+		calcSpace = new long[termsToAdd];
+	}
+
 
 	
-	private void slideOne() {
+	private Long slideOne() {
 		long tempSum = calcSpace[0];	
 
 		for(int i = 1; i < termsToAdd; i++) {
@@ -32,31 +63,40 @@ class GeneralFibonacci {
 			tempSum += calcSpace[i];
 		}
 		calcSpace[termsToAdd-1] = tempSum;
+		
+		Long time = 4L + (termsToAdd - 1)*4;
+		return time;
 	}
 	
 	
-	private void calculateNthTermAux(int nthTerm) {
+	private Long calculateNthTermAux(int nthTerm) {
 		if (nthTerm == (termsToAdd - 1)) {
 			calcSpace = firstNTerms.clone();
-			return;
+			return (1L + termsToAdd);
 		}
 		
-		calculateNthTermAux(nthTerm - 1);
-		slideOne();
+		Long time = calculateNthTermAux(nthTerm - 1);
+		time += slideOne() + 1;
+		
+		return time;
 	}
 
 	
-	public long calculateNthTerm(int nthTerm) {
+	public Pair<Long,Long> calculateNthTerm(int nthTerm) {
+		Long time = Long.valueOf(termsToAdd);
+
 		Arrays.fill(calcSpace,0);
  
 		if (nthTerm < termsToAdd) {
 			if(DEBUG_PRINT_TERMS) {
 				System.out.println("Terms is an Initial Value of the Fibonacci Definition");			
 			}
-			return firstNTerms[nthTerm];
+			time += 2;
+			Pair<Long,Long> pairValue = new Pair<Long,Long>(firstNTerms[nthTerm],time);
+			return pairValue;
 		}
 		
-		calculateNthTermAux(nthTerm);
+		time += calculateNthTermAux(nthTerm);
 
 		if (DEBUG_PRINT_TERMS) {
 			for(int i = 0; i < termsToAdd; i++) {
@@ -64,39 +104,47 @@ class GeneralFibonacci {
 			}
 		}
 
-		return calcSpace[termsToAdd -1];
+		Pair<Long,Long> pairValue = new Pair<Long, Long>(calcSpace[termsToAdd -1],time);
+		return pairValue;		
 	}
 	
 	
-	public long calculateNthTermExp(int nthTerm) {
+	public Pair<Long,Long> calculateNthTermExp(int nthTerm) {
 		if (nthTerm < termsToAdd) {
 			if(DEBUG_PRINT_TERMS) {
 				System.out.println("Terms is an Initial Value of the Fibonacci Definition");
-			}
-			return firstNTerms[nthTerm];
+			}			
+			Pair<Long,Long> pairValue = new Pair<Long,Long>(firstNTerms[nthTerm],2L);
+			return pairValue;
 		}
 		
-		long answer = 0;
+		Long answer = 0L;
+		Long time = 2L;
 
 		for(int i = 0; i < termsToAdd; i++) {
-			answer += calculateNthTermExp(nthTerm - 1 -i);		
+			Pair<Long,Long> pairValue = calculateNthTermExp(nthTerm - 1 -i);
+			answer += pairValue.first();	
+			time += pairValue.second() + 3;		
 		}
 
-		return answer;
+		Pair<Long,Long> pairValue = new Pair<Long, Long>(answer,time);
+		return pairValue;
 	}
 	
 	
-	public long calculateNthTermIterative(int nthTerm) {
+	public Pair<Long,Long> calculateNthTermIterative(int nthTerm) {
 		if (nthTerm < termsToAdd) {
 			if(DEBUG_PRINT_TERMS) {
 				System.out.println("Terms is an Initial Value of the Fibonacci Definition");
 			}
-			return firstNTerms[nthTerm];
+			Pair<Long,Long> pairValue = new Pair<Long,Long>(firstNTerms[nthTerm],2L);
+			return pairValue;
 		}
 		
 		calcSpace = firstNTerms.clone();
 		
-		long nextTerm = 0;
+		Long nextTerm = 0L;
+		Long time = 2L + termsToAdd;
 		int indexNextTerm = termsToAdd - 1;
 
 		while(indexNextTerm < nthTerm) {
@@ -109,9 +157,11 @@ class GeneralFibonacci {
 			
 			calcSpace[termsToAdd - 1] = nextTerm;			
 			indexNextTerm++;
+			time += 4*(termsToAdd - 1) + 5;
 		}
-
-		return nextTerm;
+		
+		Pair<Long,Long> pairValue = new Pair<Long, Long>(nextTerm,time);
+		return pairValue;
 	}
 
 }
